@@ -2,6 +2,7 @@ import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 
 const COMPANY_STOCKS_LIST_URL = `https://www.set.or.th/en/market/get-quote/stock/`;
+const NEXT_PAGE_ELEMENT = `li.page-link__next`;
 
 export const scrapeStocksListing = async () => {
   console.log("Starting...");
@@ -10,32 +11,34 @@ export const scrapeStocksListing = async () => {
   await page.setViewport({ width: 1300, height: 600 });
 
   // initial data
-  // const scrapedData = [];
+  let scrapedData = [];
   let pageCount = 0;
   // loading url
   await page.goto(COMPANY_STOCKS_LIST_URL, { waitUntil: "domcontentloaded" });
 
-  // // scrape web util no next button available
-  // while (true) {
-  //   pageCount++;
-  //   console.log(`Scraping page: ${pageCount}...`);
-  //   // wait 3 seconds
-  //   await wait(3000);
-  //   // scrape data each page
-  //   const data = await scrapPageContent(page);
-  //   if (data) {
-  //     // add data of {page} into scrapedData list
-  //     scrapedData = [...scrapedData, data];
-  //   }
-  //   // change page
-  //   const isNextPageAvailable = await nextPageAvailable(page);
-  //   if (!isNextPageAvailable) {
-  //     // exist loop
-  //     break;
-  //   }
-  // }
-  await wait(3000);
-  const scrapedData = await scrapPageContent(page);
+  // scrape web util no next button available
+  while (true) {
+    pageCount++;
+    console.log(`Scraping page: ${pageCount}...`);
+    // wait 3 seconds
+    await wait(3000);
+    // scrape data each page
+    const data = await scrapPageContent(page);
+    if (data) {
+      // add data of {page} into scrapedData list
+      scrapedData = [...scrapedData, ...data];
+    }
+    // change page
+    const isNextPageAvailable = await nextPageAvailable(page);
+    console.log("isNextPageAvailable", isNextPageAvailable);
+    if (!isNextPageAvailable || pageCount >= 3) {
+      // exist loop
+      break;
+    }
+    await page.click(NEXT_PAGE_ELEMENT);
+  }
+
+  // const scrapedData = await scrapPageContent(page);
 
   return scrapedData;
 };
@@ -43,7 +46,7 @@ export const scrapeStocksListing = async () => {
 const nextPageAvailable = async (page) => {
   const $ = cheerio.load(page.content());
   // const nextPageButton = await
-  const nextButtonElement = await $(`li.page-link__next`);
+  const nextButtonElement = await $(NEXT_PAGE_ELEMENT);
 
   // case: cannot find next element button then retry 3 times
   let counter = 0;
@@ -63,6 +66,7 @@ const nextPageAvailable = async (page) => {
     console.log("Unable to find next button of stocks table.");
     return false;
   }
+
   return true;
 };
 

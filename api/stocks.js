@@ -2,7 +2,7 @@ import apiRequest from "@/utils/service/apiRequest";
 
 const stocks = {
   getAllCommonStocksList: async (options) => {
-    return apiRequest.get(`/stocks-listing`);
+    return apiRequest.get(`/api/stocks/listing`);
   },
 };
 
