@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
+import { wait } from "./common";
 
 const COMPANY_STOCKS_LIST_URL = `https://www.set.or.th/en/market/get-quote/stock/`;
 const NEXT_PAGE_ELEMENT = `li.page-link__next`;
@@ -130,9 +131,6 @@ const scrapPageContent = async (page) => {
       }
     });
     tableData.push(tableRow);
-
-    // add the row data to the table data array
-    tableData.push(rowData);
   });
   console.log("----Finish scrapping data----");
   // filter row that not empty
@@ -140,9 +138,4 @@ const scrapPageContent = async (page) => {
     (row) => Object.keys(row)?.length > 0
   );
   return filteredTableData;
-};
-
-// waiting for (ms) millisecond
-const wait = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 };

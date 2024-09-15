@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  svg:not(.no-inherit) path,
+    svg:not(.no-inherit) g,
+    svg:not(.no-inherit) circle,
+    svg:not(.no-inherit) ellipse,
+    svg:not(.no-inherit) line,
+    svg:not(.no-inherit) polygon,
+    svg:not(.no-inherit) polyline,
+    svg:not(.no-inherit) rect,
+    svg:not(.no-inherit) g>path {
+      stroke: currentColor;
+  }
+}
+
 @layer utilities {
   .shadow-xs {
     box-shadow: 0px 1px 2px 0px #DDDDDD0D;
@@ -10,7 +24,7 @@
     @apply bg-primary-500 hover:bg-primary-600 hover:border-primary-600 focus:ring-4 focus:ring-primary-300/25 shadow-xs border border-primary-500 disabled:border-primary-300 text-white disabled:bg-primary-300 disabled:hover:bg-primary-300 rounded-lg flex justify-center items-center
   }
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 group-hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 shadow-xs border border-gray-300 disabled:border-gray-200 text-gray-700 disabled:text-gray-300 disabled:hover:bg-white rounded-[30px]
+    @apply bg-white hover:bg-gray-50 group-hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 shadow-xs border border-gray-300 disabled:border-gray-200 text-gray-700 disabled:text-gray-300 disabled:hover:bg-white rounded-lg flex justify-center items-center
   }
   .text-balance {
     text-wrap: balance;
