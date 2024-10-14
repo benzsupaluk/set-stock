@@ -2,32 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@layer base {
+  svg:not(.no-inherit) path,
+    svg:not(.no-inherit) g,
+    svg:not(.no-inherit) circle,
+    svg:not(.no-inherit) ellipse,
+    svg:not(.no-inherit) line,
+    svg:not(.no-inherit) polygon,
+    svg:not(.no-inherit) polyline,
+    svg:not(.no-inherit) rect,
+    svg:not(.no-inherit) g>path {
+      stroke: currentColor;
   }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
+  .shadow-xs {
+    box-shadow: 0px 1px 2px 0px #DDDDDD0D;
+  }
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 hover:border-primary-600 focus:ring-4 focus:ring-primary-300/25 shadow-xs border border-primary-500 disabled:border-primary-300 text-white disabled:bg-primary-300 disabled:hover:bg-primary-300 rounded-lg flex justify-center items-center
+  }
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 group-hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 shadow-xs border border-gray-300 disabled:border-gray-200 text-gray-700 disabled:text-gray-300 disabled:hover:bg-white rounded-lg flex justify-center items-center
+  }
   .text-balance {
     text-wrap: balance;
   }
+
 }
