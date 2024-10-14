@@ -1,9 +1,13 @@
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
-import { wait } from "./common";
+import { wait, transformKeys } from "./common";
 
 const COMPANY_STOCKS_LIST_URL = `https://www.set.or.th/en/market/get-quote/stock/`;
-const NEXT_PAGE_ELEMENT = `li.page-link__next`;
+const NEXT_PAGE_ELEMENT = `button[role="menuitem"][type="button"][aria-label="Go to next page"].page-link`;
+const MAX_PAGE = 100;
+
+let nextPageCounter = 0;
+let containerCounter = 0;
 
 export const scrapeStocksListing = async () => {
   console.log("Starting...");
@@ -26,40 +30,39 @@ export const scrapeStocksListing = async () => {
     // scrape data each page
     const data = await scrapPageContent(page);
     if (data) {
-      // add data of {page} into scrapedData list
+      // add data of [page] into scrapedData list
       scrapedData = [...scrapedData, ...data];
     }
     // change page
     const isNextPageAvailable = await nextPageAvailable(page);
-    console.log("isNextPageAvailable", isNextPageAvailable);
-    if (!isNextPageAvailable || pageCount >= 3) {
+
+    if (!isNextPageAvailable || pageCount >= MAX_PAGE) {
+      console.log("Last page...Stop scraping");
       // exist loop
       break;
     }
     await page.click(NEXT_PAGE_ELEMENT);
   }
-
   // const scrapedData = await scrapPageContent(page);
 
   return scrapedData;
 };
 
 const nextPageAvailable = async (page) => {
-  const $ = cheerio.load(page.content());
-  // const nextPageButton = await
-  const nextButtonElement = await $(NEXT_PAGE_ELEMENT);
+  const html = await page.content();
+  const $ = cheerio.load(html);
 
+  const nextButtonElement = await $(NEXT_PAGE_ELEMENT);
   // case: cannot find next element button then retry 3 times
-  let counter = 0;
-  if (!nextButtonElement) {
-    counter++;
+  if (nextButtonElement.length <= 0) {
+    nextPageCounter++;
     console.log(
-      `Cannot find the next button... Running retry number ${counter}`
+      `Cannot find the next button... Running retry number ${nextPageCounter}`
     );
     // retry 3 times to find table selector
-    if (counter < 3) {
+    if (nextPageCounter < 3) {
       // wait 2 seconds
-      await wait(2000);
+      await wait(1000);
       // run scrapPageContent again
       await nextPageAvailable(page);
     }
@@ -72,7 +75,8 @@ const nextPageAvailable = async (page) => {
 };
 
 const scrapPageContent = async (page) => {
-  const $ = cheerio.load(await page.content());
+  const html = await page.content();
+  const $ = cheerio.load(html);
 
   // find [<div class="table-responsive"></div>]
   // that does not have[style display: none]
@@ -82,8 +86,7 @@ const scrapPageContent = async (page) => {
   );
 
   // case: cannot find stocks table then retry 3 times
-  let containerCounter = 0;
-  if (!tableContainer) {
+  if (tableContainer.length <= 0) {
     containerCounter++;
     console.log(
       `Cannot find the table selector... Running retry number ${containerCounter}`
@@ -132,10 +135,13 @@ const scrapPageContent = async (page) => {
     });
     tableData.push(tableRow);
   });
-  console.log("----Finish scrapping data----");
+  console.log("----Finish data scrapping----");
   // filter row that not empty
   const filteredTableData = tableData.filter(
     (row) => Object.keys(row)?.length > 0
   );
-  return filteredTableData;
+  // change key format
+  const transformTableData = transformKeys(filteredTableData);
+
+  return transformTableData;
 };

@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect } from "react";
-import api from "@/api";
+import apiRequest from "@/utils/service/apiRequest";
+import { STOCK_COLUMN_NAME_KEY } from "@/constants";
 
 import SearchInput from "@/components/common/SearchInput";
 import RefreshIcon from "@/public/icons/refresh.svg";
@@ -17,19 +18,33 @@ export default function Home() {
 
   const fetchStockListing = async () => {
     setLoadingAllStocks(true);
-    // call scrapping API
+    // // call scrapping API
+    // try {
+    //   const { data } = await api.stocks.getAllCommonStocksList();
+    //   setAllStocks(data);
+    // } catch (error) {
+    //   console.error(error);
+    // } finally {
+    //   setLoadingAllStocks(false);
+    // }
+  };
+
+  const fetchSetSessionsAndSave = async () => {
     try {
-      const { data } = await api.stocks.getAllCommonStocksList();
+      const { data } = await apiRequest.get(`/api/stocks/listing`);
+      console.log(data);
       setAllStocks(data);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoadingAllStocks(false);
     }
   };
 
+  const fetchLatestSetSession = async () => {};
+
   useEffect(() => {
-    fetchStockListing();
+    // fetchStockListing();
+    // fetchSetSessions();
   }, []);
 
   const allStocksHeader = useMemo(() => {
@@ -40,8 +55,12 @@ export default function Home() {
     return searchInput
       ? allStocks.filter((stocks) => {
           const searchText = searchInput?.toLowerCase()?.trim();
-          const symbol = stocks?.["Symbol"]?.toLowerCase()?.trim();
-          const companyName = stocks?.["Company Name"]?.toLowerCase()?.trim();
+          const symbol = stocks?.[STOCK_COLUMN_NAME_KEY.SYMBOL]
+            ?.toLowerCase()
+            ?.trim();
+          const companyName = stocks?.[STOCK_COLUMN_NAME_KEY.COMPANY_NAME]
+            ?.toLowerCase()
+            ?.trim();
           return (
             symbol?.includes(searchText) || companyName?.includes(searchText)
           );
@@ -57,7 +76,7 @@ export default function Home() {
         <button
           type="button"
           className="btn-secondary px-3.5 py-2 ml-auto text-sm font-semibold gap-1.5"
-          onClick={fetchStockListing}
+          onClick={() => {}}
         >
           <RefreshIcon className="w-4 h-4" />
           <span>Refresh</span>
@@ -89,7 +108,7 @@ export default function Home() {
             </thead>
             <tbody>
               {filteredStocks.map((stocks, index) => {
-                const symbol = stocks?.["Symbol"];
+                const symbol = stocks?.[STOCK_COLUMN_NAME_KEY.SYMBOL];
                 return (
                   <tr
                     key={index}
@@ -104,7 +123,11 @@ export default function Home() {
                       return (
                         <td className="py-4 px-6 text-left text-sm">
                           {symbol ? (
-                            <Link href={`/stock/${stocks?.["Symbol"]}`}>
+                            <Link
+                              href={`/stock/${
+                                stocks?.[STOCK_COLUMN_NAME_KEY.SYMBOL]
+                              }`}
+                            >
                               {stocks?.[header] || ""}
                             </Link>
                           ) : (

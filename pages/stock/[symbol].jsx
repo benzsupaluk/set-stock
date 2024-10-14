@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import api from "@/api";
 
 const StockDetailPage = () => {
   const router = useRouter();
@@ -561,14 +560,14 @@ const StockDetailPage = () => {
   const [loadingState, setLoadingState] = useState(false);
 
   const fetchStockMajorShareholders = async () => {
-    // call scrapping API
-    try {
-      const { data } = await api.stocks.getMajorShareholdersDetail(symbol);
-      console.log("data", data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-    }
+    // // call scrapping API
+    // try {
+    //   const { data } = await api.stocks.getMajorShareholdersDetail(symbol);
+    //   console.log("data", data);
+    // } catch (error) {
+    //   console.error(error);
+    // } finally {
+    // }
   };
 
   useEffect(() => {
