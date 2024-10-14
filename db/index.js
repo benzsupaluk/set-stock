@@ -4,18 +4,44 @@ const STOCK_LIST_SESSIONS_TABLE = "stock_list_sessions";
 const OVERALL_STOCK_LIST = "stock_list";
 
 const db = {
-  getSetSessions: async () => {
-    let { data: stockListSessions, error } = await supabase
+  getLatestStockSession: async () => {
+    let { data, error } = await supabase
       .from(STOCK_LIST_SESSIONS_TABLE)
-      .select("*");
+      .select("*")
+      .order("scraped_at", { ascending: false })
+      .limit(1);
 
     if (error) {
       throw error;
     } else {
-      return stockListSessions;
+      return data?.[0];
     }
   },
-  createSetSession: async () => {
+  getAllStockSessions: async () => {
+    let { data, error } = await supabase
+      .from(STOCK_LIST_SESSIONS_TABLE)
+      .select("*")
+      .order("scraped_at", { ascending: false });
+
+    if (error) {
+      throw error;
+    } else {
+      return data;
+    }
+  },
+  getSetStockBySessionID: async (session_id) => {
+    let { data, error } = await supabase
+      .from(OVERALL_STOCK_LIST)
+      .select("*")
+      .eq("session_id", session_id);
+
+    if (error) {
+      throw error;
+    } else {
+      return data;
+    }
+  },
+  createSetStockSession: async () => {
     const { data: sessionData, error } = await supabase
       .from(STOCK_LIST_SESSIONS_TABLE)
       .insert({})
@@ -26,7 +52,7 @@ const db = {
       return sessionData?.[0];
     }
   },
-  saveSetList: async (stockList) => {
+  saveSetStockList: async (stockList) => {
     const { data, error } = await supabase
       .from(OVERALL_STOCK_LIST)
       .insert(stockList)

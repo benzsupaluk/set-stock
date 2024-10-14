@@ -14,3 +14,25 @@ export const transformKeys = (arr) => {
     return transformedObj;
   });
 };
+
+// format date: DD Month YYYY
+export const formatDate = (timestamp) => {
+  return new Date(timestamp).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+export const capitalizeSentence = (sentence) => {
+  return sentence
+    .split(" ")
+    .map((word) => {
+      return capitalizeFirstLetter(word);
+    })
+    .join(" ");
+};
+
+export const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};

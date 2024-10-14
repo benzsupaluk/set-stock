@@ -7,7 +7,7 @@ import db from "@/db";
 export default async function handler(req, res) {
   try {
     // create session into db
-    const sessionData = await db.createSetSession();
+    const sessionData = await db.createSetStockSession();
 
     // scrape stock list data
     const stockList = await scrapeStocksListing();
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     }
 
     // save scrape data with session_id into db
-    await db.saveSetList(stockListDataForSaving);
+    await db.saveSetStockList(stockListDataForSaving);
 
     // return stock list data
     res.status(200).json(stockList);
