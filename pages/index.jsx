@@ -125,19 +125,23 @@ export default function Home() {
       >
         <section className="flex flex-col w-full gap-4 px-8 pt-4">
           <div className="flex items-center gap-3 ml-auto">
-            <span className="font-medium text-gray-500">
+            <span className="font-medium text-sm text-gray-500">
               Select scraped date:
             </span>
-            <InputDropdown
-              items={scrapedDateList}
-              selectedItem={
-                selectedSetSession
-                  ? formatDate(selectedSetSession.scraped_at)
-                  : null
-              }
-              handleSetSelectedItem={handleSetSelectedSession}
-              position="bottom-right"
-            />
+            {!loadingAllSessions ? (
+              <InputDropdown
+                items={scrapedDateList}
+                selectedItem={
+                  selectedSetSession
+                    ? formatDate(selectedSetSession.scraped_at)
+                    : null
+                }
+                handleSetSelectedItem={handleSetSelectedSession}
+                position="bottom-right"
+              />
+            ) : (
+              <div className="animate-pulse h-11 w-[176px] bg-gray-50 rounded-lg"></div>
+            )}
           </div>
           {/* <button
           type="button"
@@ -194,7 +198,13 @@ export default function Home() {
                     >
                       {allStocksHeader.map((header, index) => {
                         return (
-                          <td className="py-4 px-6 text-left text-sm">
+                          <td
+                            key={`${header}-${index}`}
+                            className={clsx(
+                              "py-4 px-6 text-left text-sm",
+                              index === 0 ? "font-semibold" : ""
+                            )}
+                          >
                             {symbol ? (
                               <Link href={`/stock/${symbol}`}>
                                 {stocks?.[header] || ""}
