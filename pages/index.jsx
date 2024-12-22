@@ -32,7 +32,9 @@ export default function Home() {
   const fetchSetSessionsAndSave = async () => {
     setLoadingAllStocks(true);
     try {
-      const { data } = await apiRequest.get(`/api/stocks/listing`);
+      const { data } = await apiRequest.get(
+        `/api/stocks/current-common-stocks`
+      );
       setAllStocks(data);
     } catch (error) {
       console.error(error);
@@ -83,7 +85,7 @@ export default function Home() {
 
   useEffect(() => {
     if (selectedSetSession?.id) {
-      fetchStocksBySessionID(selectedSetSession.id);
+      // fetchStocksBySessionID(selectedSetSession.id);
     }
   }, [selectedSetSession]);
 

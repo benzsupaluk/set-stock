@@ -7,7 +7,7 @@
   },
   "crons": [
     {
-      "path": "/api/stocks/listing",
+      "path": "/api/stocks/fetch-common",
       "schedule": "0 0 1 * *"
     }
   ]

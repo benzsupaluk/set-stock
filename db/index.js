@@ -2,8 +2,29 @@ import { supabase } from "@/lib/supabase";
 
 const STOCK_LIST_SESSIONS_TABLE = "stock_list_sessions";
 const OVERALL_STOCK_LIST = "stock_list";
+const COMMON_STOCKS_TABLE = "common_stocks";
 
 const db = {
+  getCommonStocks: async () => {
+    let { data, error } = await supabase.from(COMMON_STOCKS_TABLE).select("*");
+
+    if (error) {
+      throw error;
+    } else {
+      return data;
+    }
+  },
+  saveCommonStocks: async (commonStocks) => {
+    const { data, error } = await supabase
+      .from(COMMON_STOCKS_TABLE)
+      .insert(commonStocks)
+      .select();
+    if (error) {
+      throw error;
+    } else {
+      return data;
+    }
+  },
   getLatestStockSession: async () => {
     let { data, error } = await supabase
       .from(STOCK_LIST_SESSIONS_TABLE)
