@@ -49,13 +49,15 @@ const scrapeDetailContent = async (page) => {
     .find("div > span.d-none.d-md-block")
     .text()
     ?.trim()
-    ?.replaceAll(/\n/g, " ");
+    ?.replaceAll(/\n/g, " ")
+    ?.replaceAll(/\t/g, " ");
 
   const freeFloat = firstRow
     .find("div.d-none.d-md-block > span")
     .text()
     ?.trim()
-    ?.replaceAll(/\n/g, " ");
+    ?.replaceAll(/\n/g, " ")
+    ?.replaceAll(/\t/g, " ");
 
   const totalShareholders = $('label:contains("Total Shareholders")')
     .next()
@@ -87,10 +89,21 @@ const scrapeDetailContent = async (page) => {
   const nvdrDate = nvdrContainer.find("span").first().text()?.trim();
   const nvdrTableInfo = await scrapeTable($);
 
+  const splittedOverflowInfo = overviewAs?.trim()?.split("Rights Type : ");
+
+  const overflowDate =
+    splittedOverflowInfo?.[0]?.split("Overview As of")?.[1]?.trim() || "";
+
+  const rightType = splittedOverflowInfo?.[splittedOverflowInfo.length - 1];
+
+  const freeFloatDate =
+    freeFloat?.trim()?.split("Free Float As of")?.[1]?.trim() || "";
+
   return {
     shareholders: {
-      overviewAs: overviewAs,
-      freeFloat: freeFloat,
+      overviewDate: overflowDate,
+      rightType: rightType,
+      freeFloatDate: freeFloatDate,
       totalShareholders: totalShareholders,
       minerShareholders: minerShareholders,
       sharesScripless: sharesScripless,

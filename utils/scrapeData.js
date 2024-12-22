@@ -9,7 +9,7 @@ const MAX_PAGE = 100;
 let nextPageCounter = 0;
 let containerCounter = 0;
 
-export const scrapeStocksListing = async () => {
+export const scrapeCommonStocksListing = async () => {
   console.log("Starting...");
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
