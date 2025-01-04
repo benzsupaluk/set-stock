@@ -1,11 +1,14 @@
 import pool from "@/lib/pool";
 import { scrapeCommonStocksListing } from "@/utils/scrapeData";
 import { supabase } from "@/lib/supabase";
-import { STOCK_COLUMN_NAME_KEY } from "@/constants";
+import { STOCK_COLUMN_NAME_KEY, SESSION_ID } from "@/constants";
 import db from "@/db";
 
 export default async function handler(req, res) {
   try {
+    // create session
+    const sessionId = await db.createSetStockSession();
+
     // get all the exited common stocks
     const commonStocksData = await db.getCommonStocks();
     const exitedCommonStockSymbolList = commonStocksData.map(
@@ -30,13 +33,14 @@ export default async function handler(req, res) {
           stock?.[STOCK_COLUMN_NAME_KEY.INDUSTRY_GROUP] || "";
         data[STOCK_COLUMN_NAME_KEY.SECTOR] =
           stock?.[STOCK_COLUMN_NAME_KEY.SECTOR] || "";
+        data[SESSION_ID] = sessionId?.id || "";
         newCommonStocks.push(data);
       }
     }
 
     // save the new common stock info list into db
     await db.saveCommonStocks(newCommonStocks);
-
+    console.log("Cron job executed");
     // return stock list data
     res.status(200).json({ detail: "Updated common stocks data" });
   } catch (error) {

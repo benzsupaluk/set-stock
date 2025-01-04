@@ -11,6 +11,8 @@ export const STOCK_COLUMN_NAME_KEY = {
   SECTOR: "sector",
 };
 
+export const SESSION_ID = "session_id";
+
 export const Z_INDEX = {
   NAVBAR: 100,
   MODAL: 1000,

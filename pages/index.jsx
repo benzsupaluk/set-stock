@@ -65,10 +65,11 @@ export default function Home() {
     }
   };
 
-  const fetchStocksBySessionID = async (sessionID) => {
+  const initialCommonStocks = async () => {
     setLoadingAllStocks(true);
     try {
-      const data = await db.getSetStockBySessionID(sessionID);
+      const data = await db.getCommonStocks();
+      console.log("data", data);
       if (data) {
         setAllStocks(data);
       }
@@ -80,14 +81,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchAllSetSessions();
+    initialCommonStocks();
   }, []);
-
-  useEffect(() => {
-    if (selectedSetSession?.id) {
-      // fetchStocksBySessionID(selectedSetSession.id);
-    }
-  }, [selectedSetSession]);
 
   const handleSetSelectedSession = (selectedDate) => {
     const session = sessions.find(
@@ -123,14 +118,14 @@ export default function Home() {
     <>
       <HeadMetadata />
       <section
-        className={`grow overflow-auto flex flex-col gap-6 items-center relative`}
+        className={`grow overflow-hidden flex flex-col gap-6 items-center relative`}
       >
         <section className="flex flex-col w-full gap-4 px-8 pt-4">
           <div className="flex items-center gap-3 ml-auto">
-            <span className="font-medium text-sm text-gray-500">
+            {/* <span className="font-medium text-sm text-gray-500">
               Select scraped date:
-            </span>
-            {!loadingAllSessions ? (
+            </span> */}
+            {/* {!loadingAllSessions ? (
               <InputDropdown
                 items={scrapedDateList}
                 selectedItem={
@@ -143,7 +138,7 @@ export default function Home() {
               />
             ) : (
               <div className="animate-pulse h-11 w-[176px] bg-gray-50 rounded-lg"></div>
-            )}
+            )} */}
           </div>
           {/* <button
           type="button"
@@ -159,21 +154,24 @@ export default function Home() {
           />
         </section>
         {/* table */}
-        <section className="flex flex-col grow w-full px-8 pb-8">
+        <section className="flex flex-col grow w-full px-8 pb-8 overflow-auto">
           {loadingAllStocks ? (
             <div className="grow flex justify-center items-start pt-16">
               <LoadingThreeDots />
             </div>
           ) : (
-            <table className="w-full pb-8 table-auto">
+            <table className="w-full pb-8">
               <thead className="sticky top-0 z-[200]">
                 <tr className="bg-gray-50">
+                  <th className="text-gray-600 font-bold text-xs py-1 px-3 text-left min-w-[110px]">
+                    Scraped Date
+                  </th>
                   {allStocksHeader.map((header, index) => {
                     return (
                       <th
                         key={index}
                         className={clsx(
-                          "text-gray-600 font-bold text-xs py-3 px-6 text-left",
+                          "text-gray-600 font-bold text-xs py-1 px-3 text-left",
                           header === STOCK_COLUMN_NAME_KEY.COMPANY_NAME
                             ? "w-[50%]"
                             : "w-[200px]"
@@ -192,18 +190,24 @@ export default function Home() {
                     <tr
                       key={index}
                       className={clsx(
-                        "border-b border-gray-200",
+                        "border-b border-gray-200 text-sm",
                         symbol
                           ? "hover:bg-primary-50 cursor-pointer group text-gray-600"
                           : "bg-gray-50 text-gray-400"
                       )}
                     >
+                      <td className="py-2 px-3 text-left text-xs">
+                        {new Date(stocks?.created_at)?.toLocaleDateString(
+                          "en-US",
+                          { day: "numeric", month: "short", year: "numeric" }
+                        )}
+                      </td>
                       {allStocksHeader.map((header, index) => {
                         return (
                           <td
                             key={`${header}-${index}`}
                             className={clsx(
-                              "py-4 px-6 text-left text-sm",
+                              "py-2 px-3 text-left text-sm",
                               index === 0 ? "font-semibold" : ""
                             )}
                           >

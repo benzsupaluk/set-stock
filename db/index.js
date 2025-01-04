@@ -2,7 +2,9 @@ import { supabase } from "@/lib/supabase";
 
 const STOCK_LIST_SESSIONS_TABLE = "stock_list_sessions";
 const OVERALL_STOCK_LIST = "stock_list";
+
 const COMMON_STOCKS_TABLE = "common_stocks";
+const COMMON_STOCKS_SESSION_TABLE = "common_stocks_session";
 
 const db = {
   getCommonStocks: async () => {
@@ -27,7 +29,7 @@ const db = {
   },
   getLatestStockSession: async () => {
     let { data, error } = await supabase
-      .from(STOCK_LIST_SESSIONS_TABLE)
+      .from(COMMON_STOCKS_SESSION_TABLE)
       .select("*")
       .order("scraped_at", { ascending: false })
       .limit(1);
@@ -40,7 +42,7 @@ const db = {
   },
   getAllStockSessions: async () => {
     let { data, error } = await supabase
-      .from(STOCK_LIST_SESSIONS_TABLE)
+      .from(COMMON_STOCKS_SESSION_TABLE)
       .select("*")
       .order("scraped_at", { ascending: false });
 
@@ -64,7 +66,7 @@ const db = {
   },
   createSetStockSession: async () => {
     const { data: sessionData, error } = await supabase
-      .from(STOCK_LIST_SESSIONS_TABLE)
+      .from(COMMON_STOCKS_SESSION_TABLE)
       .insert({})
       .select();
     if (error) {
